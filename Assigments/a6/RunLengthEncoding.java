@@ -82,9 +82,11 @@ public class RunLengthEncoding {
     }
 
     public static void main(String[] args) {
-
-        System.out.println("orginal is " + "qwwwwwwwwweeeeerrtyyyyyqqqqwEErTTT");
-        System.out.println("Encoded is " + encode("qwwwwwwwwweeeeerrtyyyyyqqqqwEErTTT"));
-        System.out.println("Decoded is " + decode(encode("qwwwwwwwwweeeeerrtyyyyyqqqqwEErTTT")));
+        String var = "qwwwwwwwwweeeeerrtyyyyyqqqqwEErTTT";
+        String enVar = encode(var);
+        String deVar = decode(enVar);
+        System.out.println("orginal is " + var);
+        System.out.println("Encoded is " + enVar);
+        System.out.println("Decoded is " + deVar);
     }
 }
