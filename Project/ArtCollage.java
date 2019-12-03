@@ -162,7 +162,16 @@ public class ArtCollage {
      */
     public void replaceTile(String filename, int collageCol, int collageRow) {
 
-        // WRITE YOUR CODE HERE
+        Picture rep = new Picture(filename);
+        for (int tcol = 0; tcol < tileDimension; tcol++) {
+            for (int trow = 0; trow < tileDimension; trow++) {
+                int scol = tcol * rep.width() / (tileDimension);
+                int srow = trow * rep.height() / (tileDimension);
+                Color color = rep.get(scol, srow);
+
+                collage.set(tcol + (collageCol * tileDimension), trow + (collageRow * tileDimension), color);
+            }
+        }
     }
 
     /*
@@ -172,7 +181,22 @@ public class ArtCollage {
      */
     public void makeCollage() {
 
-        // WRITE YOUR CODE HERE
+        int width = tileDimension * collageDimension;
+        int height = tileDimension * collageDimension;
+        this.collage = new Picture(width, height);
+
+        for (int col = 0; col < tileDimension; col++) {
+            for (int row = 0; row < tileDimension; row++) {
+                int k = col * this.original.width() / tileDimension;
+                int l = row * this.original.height() / tileDimension;
+                Color color = this.original.get(k, l);
+                for (int i = 0; i < collageDimension; i++) {
+                    for (int j = 0; j < collageDimension; j++) {
+                        this.collage.set(i * tileDimension + col, j * tileDimension + row, color);
+                    }
+                }
+            }
+        }
     }
 
     /*
@@ -187,35 +211,27 @@ public class ArtCollage {
      */
     public void colorizeTile(String component, int collageCol, int collageRow) {
 
-        // read in the picture specified by command-line argument
-        Picture picture = new Picture(component);
-        int width = picture.width();
-        int height = picture.height();
+        for (int i = 0; i < tileDimension; i++) {
+            for (int j = 0; j < tileDimension; j++) {
+                Color color = collage.get(i + (collageCol * tileDimension), j + (collageRow * tileDimension));
+                if (component.equalsIgnoreCase("red")) {
+                    int r = color.getRed();
+                    Color red = new Color(r, 0, 0);
+                    collage.set(i + (collageCol * tileDimension), j + (collageRow * tileDimension), red);
 
-        // create three empy pictures of the same dimension
-        Picture pictureR = new Picture(width, height);
-        Picture pictureG = new Picture(width, height);
-        Picture pictureB = new Picture(width, height);
+                } else if (component.equalsIgnoreCase("blue")) {
+                    int b = color.getBlue();
+                    Color blue = new Color(0, 0, b);
+                    collage.set(i + (collageCol * tileDimension), j + (collageRow * tileDimension), blue);
 
-        // separate colors
-        for (int col = 0; col < width; col++) {
-            for (int row = 0; row < height; row++) {
-                Color color = picture.get(col, row);
-                int r = color.getRed();
-                int g = color.getGreen();
-                int b = color.getBlue();
-                pictureR.set(col, row, new Color(r, 0, 0));
-                pictureG.set(col, row, new Color(0, g, 0));
-                pictureB.set(col, row, new Color(0, 0, b));
+                } else if (component.equalsIgnoreCase("green")) {
+                    int g = color.getGreen();
+                    Color green = new Color(0, g, 0);
+                    collage.set(i + (collageCol * tileDimension), j + (collageRow * tileDimension), green);
+
+                }
             }
         }
-
-        // display each picture in its own window
-        pictureR.show();
-        pictureG.show();
-        pictureB.show();
-    }
-
     }
 
     /*
@@ -228,34 +244,13 @@ public class ArtCollage {
      */
 
     public void greyscaleTile(int collageCol, int collageRow) {
-
-        // Picture newPicture = new Picture(obj);
-
-        // int width = obj.width();
-
-        // int height = obj.height();
-
-        // for (int column = 0; column < width; column++)
-
-        // for (int row = 0; row < height; row++) {
-
-        // Color color = obj.get(column, row);
-
-        // // finding average of r,g,b values
-
-        // int avg = (color.getRed() + color.getGreen() + color.getBlue()) / 3;
-
-        // // creating a new color with same r g b values
-
-        // Color gray = new Color(avg, avg, avg);
-
-        // // setting color to current position in newPicture
-
-        // newPicture.set(column, row, gray);
-
-        // }
-
-        // return newPicture;
+        for (int i = 0; i < tileDimension; i++) {
+            for (int j = 0; j < tileDimension; j++) {
+                Color color = collage.get(i + (collageCol * tileDimension), j + (collageRow * tileDimension));
+                Color gray = Luminance.toGray(color);
+                collage.set(i + (collageCol * tileDimension), j + (collageRow * tileDimension), gray);
+            }
+        }
     }
 
     // Test client
@@ -263,8 +258,8 @@ public class ArtCollage {
         // Creates a collage of 3x3 tiles. Each tile dimension is 200x200 pixels
         ArtCollage art = new ArtCollage(args[0], 200, 3);
         art.makeCollage();
-        // Colorize tile at col 2, row 1 to only show the blue component
-        art.colorizeTile("blue", 2, 1);
+        // Replace tile at col 1, row 1 with args[1] image
+        art.replaceTile(args[1], 1, 1);
         art.showCollagePicture();
     }
 }
